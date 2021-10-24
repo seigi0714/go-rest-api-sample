@@ -1,0 +1,21 @@
+version: '2'
+services:
+  db:
+    image: go-rest-api-db
+    container_name: go-rest-api-db
+    build: build/db
+    environment:
+      MYSQL_ROOT_PASSWORD: todo-password
+      TZ: "UTC"
+    ports:
+      - "127.0.0.1:3307:3306"
+  api-server:
+    image: sample-api-server
+    container_name: sample-api-server
+    build:
+      context: ./
+      dockerfile: build/api/Dockerfile
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      - db
