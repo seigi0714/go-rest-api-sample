@@ -1,15 +1,22 @@
-FROM golang:1.17.1-alpine as builder
+FROM golang:1.17.1 as builder
 
-WORKDIR /build
-COPY ../../go.mod ../../go.sum ./
+WORKDIR /go/src
+
+COPY go.mod go.sum ./
 RUN go mod download
-COPY ../../  ./
+
+COPY cmd/api/main.go  ./
 
 ARG CGO_ENABLED=0
 ARG GOOS=linux
 ARG GOARCH=amd64
-RUN go build -ldflags '-s -w' cmd/api
+RUN go build \
+    -o /go/bin/main \
+    -ldflags '-s -w'
 
-FROM alpine
-COPY --from=builder /build/api /opt/app/
-ENTRYPOINT ["/opt/app/api"]
+
+FROM scratch as runner
+
+COPY --from=builder /go/bin/main /app/main
+
+ENTRYPOINT ["/app/main"]

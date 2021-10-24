@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github/seigi0714/go-rest-api-samle/controller"
-	"github/seigi0714/go-rest-api-samle/model/repository"
+	"github.com/seigi0714/go-rest-api-sample/controller"
+	"github.com/seigi0714/go-rest-api-sample/model/repository"
 )
 
 var tr = repository.NewTodoRepository()
