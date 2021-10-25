@@ -1,15 +1,12 @@
 package main
 
 import (
-	"net/http"
+	"fmt"
 
 	"github.com/seigi0714/go-rest-api-sample/internal/router"
 )
 
 func main() {
-	server := http.Server{
-		Addr: ":8080",
-	}
+	fmt.Print("serve")
 	router.Handle()
-	server.ListenAndServe()
 }
