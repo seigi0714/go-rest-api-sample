@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/seigi0714/go-rest-api-sample/controller/dto"
+	"github.com/seigi0714/go-rest-api-sample/pkg/controller/dto"
 	"github.com/seigi0714/go-rest-api-sample/test"
 )
 

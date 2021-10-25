@@ -2,13 +2,14 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"path"
 	"strconv"
 
-	"github.com/seigi0714/go-rest-api-sample/controller/dto"
 	"github.com/seigi0714/go-rest-api-sample/model/entity"
 	"github.com/seigi0714/go-rest-api-sample/model/repository"
+	"github.com/seigi0714/go-rest-api-sample/pkg/controller/dto"
 )
 
 type TodoController interface {
@@ -42,7 +43,7 @@ func (tc *todoController) GetTodos(w http.ResponseWriter, r *http.Request) {
 	todosResponse.Todos = todoResponses
 
 	output, _ := json.MarshalIndent(todosResponse.Todos, "", "\t\t")
-
+	fmt.Println("get Todo: ", output)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(output)
 }
@@ -52,7 +53,7 @@ func (tc *todoController) PostTodo(w http.ResponseWriter, r *http.Request) {
 	r.Body.Read(body)
 	var todoRequest dto.TodoRequest
 	json.Unmarshal(body, &todoRequest)
-
+	fmt.Println("request ::", todoRequest)
 	todo := entity.TodoEntity{Title: todoRequest.Title, Content: todoRequest.Content}
 	id, err := tc.tr.InsertTodo(todo)
 	if err != nil {

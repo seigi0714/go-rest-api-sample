@@ -7,8 +7,8 @@ type TodoResponse struct {
 }
 
 type TodoRequest struct {
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	Title   string `validate:"min=1,max=50"`
+	Content string `validate:"min=1,max=500"`
 }
 
 type TodosResponse struct {
