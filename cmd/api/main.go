@@ -3,18 +3,13 @@ package main
 import (
 	"net/http"
 
-	"github.com/seigi0714/go-rest-api-sample/controller"
-	"github.com/seigi0714/go-rest-api-sample/model/repository"
+	"github.com/seigi0714/go-rest-api-sample/internal/router"
 )
-
-var tr = repository.NewTodoRepository()
-var tc = controller.NewTodoController(tr)
-var ro = controller.NewRouter(tc)
 
 func main() {
 	server := http.Server{
 		Addr: ":8080",
 	}
-	http.HandleFunc("/todos/", ro.HandleTodosRequest)
+	router.Handle()
 	server.ListenAndServe()
 }

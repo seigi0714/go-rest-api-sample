@@ -7,7 +7,7 @@ import (
 
 var tr controller.TodoRouter = controller.NewTodoRouter()
 
-func handle() {
+func Handle() {
 	myRouter := mux.NewRouter().StrictSlash(false)
 	myRouter.HandleFunc("/todos", tr.HandleTodosRequest)
 }
