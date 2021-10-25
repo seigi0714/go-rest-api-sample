@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/seigi0714/go-rest-api-sample/model/repository"
 )
 
@@ -25,9 +27,17 @@ func NewRouter(tc TodoController) TodoRouter {
 }
 
 func (ro *todoRouter) HandleTodosRequest(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	todoId := vars["id"]
+
+	fmt.Printf("method :: %s", r.Method)
 	switch r.Method {
 	case "GET":
-		ro.tc.GetTodos(w, r)
+		if todoId != "" {
+			ro.tc.GetTodo(w, r)
+		} else {
+			ro.tc.GetTodos(w, r)
+		}
 	case "POST":
 		ro.tc.PostTodo(w, r)
 	case "PUT":
