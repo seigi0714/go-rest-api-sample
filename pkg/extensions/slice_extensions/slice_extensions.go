@@ -1,6 +1,7 @@
 package slice_extensions
 
 import (
+	"errors"
 	"reflect"
 	"sort"
 )
@@ -29,6 +30,25 @@ func (s *Stream) Filter(fn interface{}) *Stream {
 	}
 	s.slice = srv
 	return s
+}
+
+/*
+dst,err := StreamOf(hoges).
+	Find(func(hoge *Hoge) bool {
+		return hoge.Num > 3
+	})
+*/
+// Find ... 単数取得
+func (s *Stream) Find(fn interface{}) (interface{}, error) {
+	frv := reflect.ValueOf(fn)
+	for i := 0; i < s.slice.Len(); i++ {
+		rv := s.slice.Index(i)
+		out := frv.Call([]reflect.Value{rv})
+		if out[0].Bool() {
+			return rv.Interface(), nil
+		}
+	}
+	return reflect.ValueOf(fn).Interface(), errors.New("not found")
 }
 
 /*

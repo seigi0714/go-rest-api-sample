@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/seigi0714/go-rest-api-sample/internal/router"
+	"go-rest-api-sample/internal/router"
 )
 
 func main() {

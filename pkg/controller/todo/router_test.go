@@ -1,4 +1,4 @@
-package controller
+package todo_controller
 
 import (
 	"encoding/json"
@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/seigi0714/go-rest-api-sample/pkg/controller/dto"
-	"github.com/seigi0714/go-rest-api-sample/test"
+	"go-rest-api-sample/pkg/controller/dto"
+	"go-rest-api-sample/test"
 )
 
 func TestGetTodos_NotFound(t *testing.T) {

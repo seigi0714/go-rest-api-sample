@@ -1,4 +1,4 @@
-package controller
+package todo_controller
 
 import (
 	"encoding/json"
@@ -7,9 +7,9 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/seigi0714/go-rest-api-sample/model/entity"
-	"github.com/seigi0714/go-rest-api-sample/model/repository"
-	"github.com/seigi0714/go-rest-api-sample/pkg/controller/dto"
+	"go-rest-api-sample/pkg/controller/dto"
+	"go-rest-api-sample/pkg/model/entity"
+	"go-rest-api-sample/pkg/model/repository"
 )
 
 type TodoController interface {
@@ -34,7 +34,7 @@ func (tc *todoController) GetTodo(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	todo, err := tc.tr.GetTodo(todoId)
+	todo, err := tc.tr.GetTodo(todoId, []string{})
 	if err != nil {
 		w.WriteHeader(500)
 		return

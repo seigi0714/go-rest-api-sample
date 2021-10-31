@@ -1,7 +1,7 @@
 package entity
 
 type BaseEntity interface {
-	Teble() string
+	Table() string
 	PrimaryKey() string
 	FieldsDefinition() []FieldDefinition
 }

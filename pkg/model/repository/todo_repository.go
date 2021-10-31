@@ -5,10 +5,11 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/seigi0714/go-rest-api-sample/model/entity"
+	"go-rest-api-sample/pkg/model/entity"
 )
 
 type TodoRepository interface {
+	GetTodo(id int, fields []string) (todo entity.TodoEntity, err error)
 	GetTodos() (todos []entity.TodoEntity, err error)
 	InsertTodo(todo entity.TodoEntity) (id int, err error)
 	UpdateTodo(todo entity.TodoEntity) (err error)
@@ -20,6 +21,19 @@ type todoRepository struct {
 
 func NewTodoRepository() TodoRepository {
 	return &todoRepository{}
+}
+
+func (tr *todoRepository) GetTodo(id int, fields []string) (todo entity.TodoEntity, err error) {
+	e := entity.TodoEntity{}
+	fieldSql := addFields(fields, &e)
+	err = Db.
+		QueryRow("SELECT ?, content FROM ? todo WHERE id = ?", fieldSql, e.Table(), id).Scan(&todo.Id, &todo.Title, &todo.Content)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	return
 }
 
 func (tr *todoRepository) GetTodos() (todos []entity.TodoEntity, err error) {
