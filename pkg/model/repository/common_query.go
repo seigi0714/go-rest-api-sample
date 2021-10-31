@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/thoas/go-funk"
 
 	"go-rest-api-sample/pkg/extensions/slice_extensions"
@@ -8,43 +10,40 @@ import (
 )
 
 func addFields(fields []string, e entity.BaseEntity) string {
-	var fieldSql *string
+	var fieldSql = ""
+
+	fmt.Println("select field :: ", fields)
 	if len(fields) == 0 {
 		for _, fd := range e.FieldsDefinition() {
 			if !(fd.IsDefault) {
 				continue
 			}
-			fieldSqlJoin(fieldSql, fd.Sql)
+			fieldSqlJoin(&fieldSql, fd)
 		}
 	} else {
 		sqlSlice := GetSelectedFieldsSql(e, fields)
 		for _, sql := range sqlSlice {
-			fieldSqlJoin(fieldSql, sql)
+			fieldSqlJoin(&fieldSql, sql)
 		}
 	}
-	return *fieldSql
+	return fieldSql
 }
 
-func GetSelectedFieldsSql(bs entity.BaseEntity, selectedFields []string) []string {
-	return funk.Map(
-		funk.Filter(bs.FieldsDefinition(), func(fd *entity.FieldDefinition) bool {
-			return isSelected(fd, selectedFields)
-		}).([]entity.FieldDefinition),
-		func(fd *entity.FieldDefinition) string {
-			return fd.Alias
-		},
-	).([]string)
+func GetSelectedFieldsSql(bs entity.BaseEntity, selectedFields []string) []entity.FieldDefinition {
+	return funk.Filter(bs.FieldsDefinition(), func(fd entity.FieldDefinition) bool {
+		return isSelected(&fd, selectedFields)
+	}).([]entity.FieldDefinition)
 }
 
 func isSelected(fd *entity.FieldDefinition, selectedFields []string) bool {
 	return funk.Contains(selectedFields, fd.Alias)
 }
 
-func fieldSqlJoin(joinedFieldSql *string, joinFieldSql string) {
+func fieldSqlJoin(joinedFieldSql *string, joinFieldDef entity.FieldDefinition) {
 	if *joinedFieldSql == "" {
-		*joinedFieldSql = joinFieldSql
+		*joinedFieldSql = joinFieldDef.Sql + " as " + joinFieldDef.Alias
 	} else {
-		*joinedFieldSql = *joinedFieldSql + " , " + joinFieldSql
+		*joinedFieldSql = *joinedFieldSql + "," + joinFieldDef.Sql + " as " + joinFieldDef.Alias
 	}
 }
 
