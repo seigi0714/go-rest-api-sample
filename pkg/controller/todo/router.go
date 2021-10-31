@@ -1,11 +1,11 @@
-package controller
+package todo_controller
 
 import (
 	"fmt"
+	"go-rest-api-sample/pkg/model/repository"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/seigi0714/go-rest-api-sample/model/repository"
 )
 
 type TodoRouter interface {
@@ -16,13 +16,9 @@ type todoRouter struct {
 	tc TodoController
 }
 
-func NewTodoRouter() TodoRouter {
+func NewRouter() TodoRouter {
 	var tr = repository.NewTodoRepository()
 	var tc = NewTodoController(tr)
-	return NewRouter(tc)
-}
-
-func NewRouter(tc TodoController) TodoRouter {
 	return &todoRouter{tc}
 }
 

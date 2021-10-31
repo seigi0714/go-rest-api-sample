@@ -1,4 +1,4 @@
-package controller
+package todo_controller
 
 import (
 	"encoding/json"
@@ -7,9 +7,9 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/seigi0714/go-rest-api-sample/model/entity"
-	"github.com/seigi0714/go-rest-api-sample/model/repository"
-	"github.com/seigi0714/go-rest-api-sample/pkg/controller/dto"
+	"go-rest-api-sample/pkg/controller/dto"
+	"go-rest-api-sample/pkg/model/entity"
+	"go-rest-api-sample/pkg/model/repository"
 )
 
 type TodoController interface {
@@ -34,36 +34,31 @@ func (tc *todoController) GetTodo(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	todo, err := tc.tr.GetTodo(todoId)
+	//TODO :: 取得するFieldをクエリパラメータで指定
+	todo, err := tc.tr.GetTodo(todoId, []string{"id"})
 	if err != nil {
 		w.WriteHeader(500)
 		return
 	}
 
-	todoResponse := dto.TodoResponse{Id: todo.Id, Title: todo.Title, Content: todo.Content}
-
-	output, _ := json.MarshalIndent(todoResponse, "", "\t\t")
+	output, _ := json.MarshalIndent(todo, "", "\t\t")
 	fmt.Println("get Todo: ", output)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(output)
 }
 
 func (tc *todoController) GetTodos(w http.ResponseWriter, r *http.Request) {
-	todos, err := tc.tr.GetTodos()
+	// TODO:: 取得するFieldをクエリパラメータで指定
+	todos, err := tc.tr.GetTodos([]string{"id", "content"})
 	if err != nil {
 		w.WriteHeader(500)
 		return
 	}
 
-	var todoResponses []dto.TodoResponse
-	for _, v := range todos {
-		todoResponses = append(todoResponses, dto.TodoResponse{Id: v.Id, Title: v.Title, Content: v.Content})
-	}
-
 	var todosResponse dto.TodosResponse
-	todosResponse.Todos = todoResponses
+	todosResponse.Todos = todos
 
-	output, _ := json.MarshalIndent(todosResponse.Todos, "", "\t\t")
+	output, _ := json.MarshalIndent(todos, "", "\t\t")
 	fmt.Println("get Todo: ", output)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(output)

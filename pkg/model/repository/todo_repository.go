@@ -2,14 +2,16 @@ package repository
 
 import (
 	"log"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/seigi0714/go-rest-api-sample/model/entity"
+	"go-rest-api-sample/pkg/model/entity"
 )
 
 type TodoRepository interface {
-	GetTodos() (todos []entity.TodoEntity, err error)
+	GetTodo(id int, fields []string) (result map[string]interface{}, err error)
+	GetTodos(fields []string) (todos []map[string]interface{}, err error)
 	InsertTodo(todo entity.TodoEntity) (id int, err error)
 	UpdateTodo(todo entity.TodoEntity) (err error)
 	DeleteTodo(id int) (err error)
@@ -22,25 +24,76 @@ func NewTodoRepository() TodoRepository {
 	return &todoRepository{}
 }
 
-func (tr *todoRepository) GetTodos() (todos []entity.TodoEntity, err error) {
-	todos = []entity.TodoEntity{}
-	rows, err := Db.
-		Query("SELECT id, title, content FROM todo ORDER BY id DESC")
-	if err != nil {
-		log.Print(err)
-		return
-	}
+func (tr *todoRepository) GetTodo(id int, fields []string) (result map[string]interface{}, err error) {
+	// TODO:: 共通のSQL文なので関数化
+	e := entity.NewTodoEntity()
+	fieldSql := "SELECT " + addFields(fields, e)
+	from := " FROM todo"
+	where := " WHERE id = " + strconv.Itoa(id)
 
+	sql := fieldSql + from + where
+	rows, _ := Db.
+		Query(sql)
+	cols, err := rows.Columns()
 	for rows.Next() {
-		todo := entity.TodoEntity{}
-		err = rows.Scan(&todo.Id, &todo.Title, &todo.Content)
-		if err != nil {
-			log.Print(err)
-			return
+		var row = make([]interface{}, len(cols))
+		var rowp = make([]interface{}, len(cols))
+		for i := 0; i < len(cols); i++ {
+			rowp[i] = &row[i]
 		}
-		todos = append(todos, todo)
-	}
 
+		rows.Scan(rowp...)
+		rowMap := make(map[string]interface{})
+		for i, col := range cols {
+			switch row[i].(type) {
+			case []byte:
+				row[i] = string(row[i].([]byte))
+				num, err := strconv.Atoi(row[i].(string))
+				if err == nil {
+					row[i] = num
+				}
+			}
+			rowMap[col] = row[i]
+		}
+		result = rowMap
+	}
+	return
+}
+
+func (tr *todoRepository) GetTodos(fields []string) (result []map[string]interface{}, err error) {
+	// TODO:: 共通のSQL文なので関数化
+	e := entity.NewTodoEntity()
+	fieldSql := "SELECT " + addFields(fields, e)
+	from := " FROM todo"
+	sort := " ORDER BY id"
+
+	sql := fieldSql + from + sort
+	rows, _ := Db.
+		Query(sql)
+	cols, err := rows.Columns()
+	for rows.Next() {
+		var row = make([]interface{}, len(cols))
+		var rowp = make([]interface{}, len(cols))
+		for i := 0; i < len(cols); i++ {
+			rowp[i] = &row[i]
+		}
+
+		rows.Scan(rowp...)
+
+		rowMap := make(map[string]interface{})
+		for i, col := range cols {
+			switch row[i].(type) {
+			case []byte:
+				row[i] = string(row[i].([]byte))
+				num, err := strconv.Atoi(row[i].(string))
+				if err == nil {
+					row[i] = num
+				}
+			}
+			rowMap[col] = row[i]
+		}
+		result = append(result, rowMap)
+	}
 	return
 }
 

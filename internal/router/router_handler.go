@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	controller "github.com/seigi0714/go-rest-api-sample/pkg/controller/todo"
+	controller "go-rest-api-sample/pkg/controller/todo"
 )
 
-var tr controller.TodoRouter = controller.NewTodoRouter()
+var tr controller.TodoRouter = controller.NewRouter()
 
 func Handle() {
 	myRouter := mux.NewRouter()
