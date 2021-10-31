@@ -9,6 +9,7 @@ import (
 )
 
 type TodoRepository interface {
+	GetTodo(id int) (todo entity.TodoEntity, err error)
 	GetTodos() (todos []entity.TodoEntity, err error)
 	InsertTodo(todo entity.TodoEntity) (id int, err error)
 	UpdateTodo(todo entity.TodoEntity) (err error)
@@ -20,6 +21,18 @@ type todoRepository struct {
 
 func NewTodoRepository() TodoRepository {
 	return &todoRepository{}
+}
+
+func (tr *todoRepository) GetTodo(id int) (todo entity.TodoEntity, err error) {
+	todo = entity.TodoEntity{}
+	err = Db.
+		QueryRow("SELECT id, title, content FROM todo WHERE id = ?", id).Scan(&todo.Id, &todo.Title, &todo.Content)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	return
 }
 
 func (tr *todoRepository) GetTodos() (todos []entity.TodoEntity, err error) {
